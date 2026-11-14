@@ -1,12 +1,12 @@
 # Python Database Engine
 
-A custom database engine developed using Python, implementing SQL query processing, binary file storage, page management, record serialization, and B-tree indexing.
+A custom database management system (DBMS) developed from scratch using Python. It implements SQL query processing, binary file storage, fixed-size database pages, record serialization, page management, and B-tree indexing.
 
 ## Project Overview
 
 This project demonstrates the internal working of a database management system by implementing its core components from scratch.
 
-Instead of relying on an existing database engine, it uses custom-built modules to process supported SQL statements, manage records, store data in binary files, and retrieve records using B-tree indexing.
+Instead of relying on an existing database engine, it uses custom-built modules to parse supported SQL statements, execute database operations, manage records, store data in binary files, and retrieve records using B-tree indexing.
 
 ## Key Features
 
@@ -17,27 +17,51 @@ Instead of relying on an existing database engine, it uses custom-built modules 
 - Fixed-size 4096-byte database pages
 - Record serialization and deserialization
 - Page management
-- B-tree indexing
+- B-tree indexing for primary-key lookups
 - Primary-key validation and duplicate detection
 - Data persistence after reopening the database
 - Performance benchmarking
 
 ## Technology Stack
 
-- Python
-- SQL
-- Regular Expressions
-- Binary File Handling
-- Data Structures and Algorithms
-- B-tree Indexing
-- JSON Metadata Storage
-- Unit and Integration Testing
+- **Language:** Python
+- **Query Language:** SQL (supported subset)
+- **Data Structures:** B-tree
+- **Storage:** Binary file handling
+- **Metadata:** JSON
+- **Parsing:** Regular Expressions
+- **Testing:** Custom unit and integration test modules
+- **Version Control:** Git and GitHub
 
-## Project Architecture
+## System Architecture
 
-SQL Query → SQL Parser → Query Engine → Binary Database → Page Manager → Page Storage
+The database engine follows a modular architecture:
 
-The B-tree index supports primary-key lookups.
+```text
+             User / SQL Query
+                    |
+                    v
+               SQL Parser
+                    |
+                    v
+              Query Engine
+                    |
+                    v
+             Binary Database
+                    |
+          +---------+---------+
+          |                   |
+          v                   v
+     Page Manager         B-tree Index
+          |
+          v
+       Page Store
+          |
+          v
+     Binary Database File
+```
+
+The SQL parser converts supported SQL statements into structured operations. The query engine forwards these operations to the database layer. The database manages records through page storage and uses an in-memory B-tree index for primary-key lookups.
 
 ## Project Structure
 
@@ -45,7 +69,10 @@ The B-tree index supports primary-key lookups.
 Python-Database-Engine/
 │
 ├── data/
+│   └── Generated database files
+│
 ├── docs/
+│   └── architecture.md
 │
 ├── src/
 │   ├── database.py
@@ -59,13 +86,70 @@ Python-Database-Engine/
 │   └── storage.py
 │
 ├── tests/
+│   ├── test_page_storage.py
+│   ├── test_record_serializer.py
+│   ├── test_page_manager.py
+│   ├── test_binary_database.py
+│   ├── test_binary_crud.py
+│   ├── test_btree.py
+│   ├── test_btree_database.py
+│   └── test_sql_binary.py
+│
+├── src/benchmarks/
+│   └── benchmark_database.py
+│
 ├── main.py
-└── README.md
+├── README.md
+└── .gitignore
 ```
+
+## Supported SQL Operations
+
+The engine currently supports the following SQL operations:
+
+### Create Table
+
+```sql
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name TEXT NOT NULL,
+    salary FLOAT
+);
+```
+
+### Insert Records
+
+```sql
+INSERT INTO employees (id, name, salary)
+VALUES (1, 'Arshad', 25000.5);
+```
+
+### Select Records
+
+```sql
+SELECT * FROM employees;
+```
+
+### Update Records
+
+```sql
+UPDATE employees
+SET salary = 40000
+WHERE id = 1;
+```
+
+### Delete Records
+
+```sql
+DELETE FROM employees
+WHERE id = 1;
+```
+
+*Note: These examples illustrate the supported SQL subset, not full SQL compatibility.*
 
 ## Testing
 
-The project includes separate tests for:
+The project includes separate test modules for:
 
 - Page storage
 - Record serialization
@@ -75,6 +159,19 @@ The project includes separate tests for:
 - B-tree operations
 - B-tree database integration
 - SQL-to-binary database integration
+
+Run individual test modules from the project root:
+
+```powershell
+python -m tests.test_page_storage
+python -m tests.test_record_serializer
+python -m tests.test_page_manager
+python -m tests.test_binary_database
+python -m tests.test_binary_crud
+python -m tests.test_btree
+python -m tests.test_btree_database
+python -m tests.test_sql_binary
+```
 
 ## Performance Benchmark
 
@@ -86,33 +183,41 @@ The database was benchmarked using different record counts.
 | 1,000 | 2.959015 | 0.612793 | 6.205474 | 40 |
 | 5,000 | 12.266342 | 1.025043 | 62.770714 | 196 |
 
-*Results from the current development environment; performance may vary across systems.*
+*Results from the current development environment. Performance may vary depending on hardware and system conditions.*
 
-## How to Run
+The benchmark illustrates the difference between indexed primary-key lookup and full-record scanning for the tested datasets.
 
-Clone the repository:
+## Installation and Setup
 
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd Python-Database-Engine
+### 1. Clone the repository
+
+```powershell
+git clone https://github.com/arshad557/Python-database-engine.git
+cd Python-database-engine
 ```
 
-Create a virtual environment:
+### 2. Create a virtual environment
 
-```bash
+```powershell
 python -m venv venv
 ```
 
-Activate it on Windows:
+### 3. Activate the environment (Windows)
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
-Run the application:
+### 4. Run the application
 
-```bash
+```powershell
 python main.py
+```
+
+### 5. Run the benchmark
+
+```powershell
+python -m src.benchmarks.benchmark_database
 ```
 
 ## Future Enhancements
@@ -127,3 +232,5 @@ python main.py
 ## Author
 
 Developed as a hands-on database systems and software engineering project.
+
+**GitHub:** https://github.com/arshad557
